@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Things that I like</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>GiphyProject</h1>
+    
+        
+        <div id="buttons-view"></div> 
+
+    <!-- Form para fill -->
+        <form id="fun-form">
+          <label for="boton-input">Stuff that you like!</label>
+         <input type="text" id="boton-input">
+
+
+          <input type="button" text="Add" value= add onclick="add()"/>
+          <span id="add-summer"></span>
+        </form>
+
+  <div id="gifs-appear-here">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+	var summer = ["Beach", "BBQ", "Pool"];
+	
+	 // Function for displaying fun data
+	 function renderButtons() {
+
+	   // Deleting the fun buttons prior to adding new fun buttons
+	   // (this is necessary otherwise we will have repeat buttons)
+	   $("#buttons-view").empty();
+
+	   // Looping through the array of summer
+	   for (var i = 0; i < summer.length; i++) {
+
+
+		 // Then dynamicaly generating buttons for each fun in the array.
+		 // This code $("<button>") is all jQuery needs to create the stfun and end tag. (<button></button>)
+		 var a = $("<button>");
+		 // Adding a class
+		 a.addClass("btn");
+		 // Adding a data-attribute with a value of the fun at index i
+		 a.attr("data-name", summer[i]);
+		 // Providing the button's text with a value of the fun at index i
+		 a.text(summer[i]);
+		 
+		 // Adding the button to the HTML
+		 $("#buttons-view").append(a);
+		 
+	   }
+   }
+   // --------------------------------------------------------MOVIE ^^^---------------
+
+// ________TRIGERED_____VVVV________________
+
+    // Event listener for all button elements
+    $(document).on("click", ".btn", function() {
+      // In this case, the "this" keyword refers to the button that was clicked
+      var dataname = $(this).attr("data-name");
+
+      // Constructing a URL to search Giphy for the name of the dataname who said the quote
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        dataname + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
+
+      // Performing our AJAX GET request
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+        // After the data comes back from the API
+        .then(function(response) {
+          // Storing an array of results in the results variable
+          var results = response.data;
+
+          // Looping over every result item
+          for (var i = 0; i < results.length; i++) {
+
+            // Only taking action if the photo has an appropriate rating
+            if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+              // Creating a div for the gif
+              var gifDiv = $("<div>");
+
+              // Storing the result item's rating
+              var rating = results[i].rating;
+
+              // Creating a paragraph tag with the result item's rating
+              var p = $("<p>").text("Rating: " + rating);
+
+              // Creating an image tag
+              var summerImage = $("<img>");
+
+              // Giving the image tag an src attribute of a proprty pulled off the
+              // result item
+              summerImage.attr("src", results[i].images.fixed_height.url);
+
+              // Appending the paragraph and summerImage we created to the "gifDiv" div we created
+              gifDiv.append(p);
+              gifDiv.append(summerImage);
+
+              // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+              $("#gifs-appear-here").prepend(gifDiv);
+            }
+          }
+        });
+    });
+// ________TRIGERED_____^^^^
+  // _________________________MOVIE vvvv____
+  
+	function add()
+	{
+		//event.preventDefault();
+        // This line grabs the input from the textbox
+        var fun = $("#boton-input").val().trim();
+
+        // Adding fun from the textbox to our array
+        summer.push(fun);
+
+        // Calling renderButtons which handles the processing of our  array
+        renderButtons();
+	}
+	
+	renderButtons();
+  </script>
+</body>
+
+</html>
